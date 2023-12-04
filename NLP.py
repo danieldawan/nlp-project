@@ -33,7 +33,7 @@ def count_unigrams(corpus):
 def make_start_corpus(corpus):
     start_words = set()
     for sentence in corpus:
-        if sentence:  # check if the sentence is not empty
+        if sentence:
             start_words.add(sentence[0])
     return list(start_words)
 
@@ -52,7 +52,7 @@ def count_bigrams(corpus):
 
 def build_uniform_probs(start_words):
     uniform_prob = 1 / len(start_words)
-    return [uniform_prob] * len(start_words)  # create a list with uniform probability for each start word
+    return [uniform_prob] * len(start_words)
 
 def build_unigram_probs(unigrams, unigram_counts, total_count):
     unigram_probs = []
