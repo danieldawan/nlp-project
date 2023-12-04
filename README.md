@@ -8,8 +8,7 @@ This repository contains a Python-based Natural Language Processing (NLP) toolki
 - **Unigram and Bigram Models**: Implements basic yet powerful statistical models for text analysis.
 - **Statistical Analysis**: Analyzes text data to determine the frequency and distribution of words and word pairs.
 - **Automated Text Generation**: Generates coherent and contextually relevant text based on the analysis of a given corpus.
-- **User-friendly Interface**: Simple and intuitive usage, suitable for both beginners and experienced users in the field of NLP.
-
+  
 ## Requirements
 - Python 3.6 or higher
 - Anaconda (recommended for managing dependencies)
