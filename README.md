@@ -16,7 +16,7 @@ This repository contains a Python-based Natural Language Processing (NLP) toolki
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/daniel-dawan/nlp-project.git
+   git clone https://github.com/danieldawan/NLP-Project.git
    ```
 2. Navigate to the cloned repository:
    ```bash
