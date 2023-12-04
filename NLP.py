@@ -115,7 +115,7 @@ def main():
 
     unigram_probs = build_unigram_probs(vocabulary, unigram_counts, corpus_length)
     bigram_probs = build_bigram_probs(unigram_counts, bigram_counts)
-    start_word_probs = build_uniform_probs(start_corpus)  # Updated to use start_corpus
+    start_word_probs = build_uniform_probs(start_corpus)
 
     num_words = 100 
     ignore_list = ['.', ',']
