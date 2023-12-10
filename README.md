@@ -36,4 +36,4 @@ This repository contains a Python-based Natural Language Processing (NLP) toolki
    python NLP.py
    ```
 ## Disclaimer
-This project has been constructed with the guidance of Carnegie Mellon University's Programming with Python course.
+This project has been constructed following the guidance of Carnegie Mellon University's Programming with Python course.
