@@ -175,8 +175,61 @@ def generate_text_from_bigrams(count, start_words, start_word_probs, bigram_prob
     return text.lstrip()
 
 def main():
-    # Main function to orchestrate the text generation process.
-    pass
+    """
+    Orchestrates the text generation process using both unigrams and bigrams.
+    Loads a text file to form a corpus, builds a vocabulary, counts unigrams and bigrams,
+    calculates probabilities, and generates text using both unigram and bigram models.
+    """
+    # Define the filename of the book or text file you wish to process
+    filename = 'path_to_your_text_file.txt'  # Replace with your text file's path
+
+    # Load the book and preprocess the corpus
+    corpus = load_book(filename)
+
+    # Calculate the length of the corpus
+    corpus_length = get_corpus_length(corpus)
+
+    # Build a vocabulary from the corpus
+    vocabulary = build_vocabulary(corpus)
+
+    # Count unigrams in the corpus
+    unigram_counts = count_unigrams(corpus)
+
+    # Identify starting words for sentences in the corpus
+    start_corpus = make_start_corpus(corpus)
+
+    # Count bigrams in the corpus
+    bigram_counts = count_bigrams(corpus)
+
+    # Calculate unigram probabilities
+    unigram_probs = build_unigram_probs(vocabulary, unigram_counts, corpus_length)
+
+    # Calculate bigram probabilities
+    bigram_probs = build_bigram_probs(unigram_counts, bigram_counts)
+
+    # Build uniform probabilities for the starting words
+    start_word_probs = build_uniform_probs(start_corpus)
+
+    # Define parameters for text generation
+    num_words = 100  # Number of words to generate
+    ignore_list = ['.', ',']  # Punctuation or words to ignore in certain operations
+    top_count = 10  # Number of top words/probabilities to display
+
+    # Generate and display text using the unigram model
+    print("Generating text from unigrams...")
+    text_from_unigrams = generate_text_from_unigrams(num_words, vocabulary, unigram_probs)
+    print(text_from_unigrams)
+
+    # Generate and display text using the bigram model
+    print("\nGenerating text from bigrams...")
+    text_from_bigrams = generate_text_from_bigrams(num_words, start_corpus, start_word_probs, bigram_probs)
+    print(text_from_bigrams)
+
+    # Display the top words based on unigram probabilities, excluding the ignore list
+    print("\nTop words based on unigram probabilities (excluding ignore list):")
+    top_words = get_top_words(top_count, vocabulary, unigram_probs, ignore_list)
+    for word, prob in top_words.items():
+        print(f"{word}: {prob}")
 
 if __name__ == "__main__":
     main()
