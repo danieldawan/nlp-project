@@ -35,3 +35,5 @@ This repository contains a Python-based Natural Language Processing (NLP) toolki
    ```bash
    python NLP.py
    ```
+## Disclaimer
+This project has been constructed following the guidance of Carnegie Mellon University's Programming with Python course.
