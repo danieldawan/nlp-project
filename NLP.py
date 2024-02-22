@@ -1,9 +1,4 @@
 def load_book(filename):
-    """
-    Loads the text from a file and returns a list of sentences, where each sentence is represented as a list of words.
-    :param filename: The path to the text file to be read.
-    :return: A list of sentences, with each sentence being a list of words.
-    """
     corpus = []
     with open(filename, 'r') as file:
         for line in file:
@@ -13,22 +8,12 @@ def load_book(filename):
     return corpus
 
 def get_corpus_length(corpus):
-    """
-    Calculates the total number of words in the corpus.
-    :param corpus: The corpus as a list of sentences, with each sentence being a list of words.
-    :return: The total count of words in the corpus.
-    """
     count = 0
     for sentence in corpus:
         count += len(sentence)
     return count
 
 def build_vocabulary(corpus):
-    """
-    Builds a vocabulary set from the corpus, containing all unique words.
-    :param corpus: The corpus as a list of sentences, with each sentence being a list of words.
-    :return: A list of unique words in the corpus.
-    """
     vocabulary = set()
     for sentence in corpus:
         for word in sentence:
@@ -36,11 +21,6 @@ def build_vocabulary(corpus):
     return list(vocabulary)
 
 def count_unigrams(corpus):
-    """
-    Counts the occurrence of each word in the corpus.
-    :param corpus: The corpus as a list of sentences, with each sentence being a list of words.
-    :return: A dictionary with words as keys and their counts as values.
-    """
     unigram_counts = {}
     for sentence in corpus:
         for word in sentence:
@@ -51,11 +31,6 @@ def count_unigrams(corpus):
     return unigram_counts
 
 def make_start_corpus(corpus):
-    """
-    Identifies and collects the starting words of all sentences in the corpus.
-    :param corpus: The corpus as a list of sentences, with each sentence being a list of words.
-    :return: A list of unique starting words in the corpus.
-    """
     start_words = set()
     for sentence in corpus:
         if sentence:
@@ -63,11 +38,6 @@ def make_start_corpus(corpus):
     return list(start_words)
 
 def count_bigrams(corpus):
-    """
-    Counts occurrences of bigrams (pairs of consecutive words) in the corpus.
-    :param corpus: The corpus as a list of sentences, with each sentence being a list of words.
-    :return: A dictionary where keys are the first words of bigrams, and values are dictionaries of the second words and their counts.
-    """
     bigram_counts = {}
     for sentence in corpus:
         for i in range(len(sentence)-1):
@@ -80,23 +50,25 @@ def count_bigrams(corpus):
                 bigram_counts[sentence[i]] = {sentence[i+1]: 1}
     return bigram_counts
 
+def count_trigrams(corpus):
+    trigram_counts = {}
+    for sentence in corpus:
+        for i in range(len(sentence) - 2):
+            key = (sentence[i], sentence[i+1])
+            if key in trigram_counts:
+                if sentence[i+2] in trigram_counts[key]:
+                    trigram_counts[key][sentence[i+2]] += 1
+                else:
+                    trigram_counts[key][sentence[i+2]] = 1
+            else:
+                trigram_counts[key] = {sentence[i+2]: 1}
+    return trigram_counts
+
 def build_uniform_probs(start_words):
-    """
-    Creates a uniform probability distribution for the starting words.
-    :param start_words: A list of starting words.
-    :return: A list of probabilities, equal for each starting word.
-    """
     uniform_prob = 1 / len(start_words)
     return [uniform_prob] * len(start_words)
 
 def build_unigram_probs(unigrams, unigram_counts, total_count):
-    """
-    Calculates the probability of each unigram in the corpus based on its frequency.
-    :param unigrams: A list of unique words in the corpus.
-    :param unigram_counts: A dictionary with words as keys and their counts as values.
-    :param total_count: The total count of words in the corpus.
-    :return: A list of probabilities corresponding to the unigrams.
-    """
     unigram_probs = []
     for unigram in unigrams:
         unigram_count = unigram_counts.get(unigram, 0)
@@ -105,12 +77,6 @@ def build_unigram_probs(unigrams, unigram_counts, total_count):
     return unigram_probs
 
 def build_bigram_probs(unigram_counts, bigram_counts):
-    """
-    Calculates the conditional probability of each bigram in the corpus.
-    :param unigram_counts: A dictionary with words as keys and their counts as values.
-    :param bigram_counts: A dictionary where keys are the first words of bigrams, and values are dictionaries of the second words and their counts.
-    :return: A dictionary where keys are the first words of bigrams and values are dictionaries containing the following words and their probabilities.
-    """
     bigram_probs = {}
     for prev_word in bigram_counts:
         following_words = []
@@ -123,29 +89,9 @@ def build_bigram_probs(unigram_counts, bigram_counts):
         bigram_probs[prev_word] = temp_dict
     return bigram_probs
 
-def get_top_words(count, words, probs, ignore_list):
-    """
-    Retrieves the top words based on their probability, excluding any in the ignore list.
-    :param count: The number of top words to return.
-    :param words: A list of words to consider.
-    :param probs: A list of probabilities corresponding to each word.
-    :param ignore_list: A list of words to exclude from consideration.
-    :return: A dictionary of the top words and their probabilities.
-    """
-    word_probs = {word: prob for word, prob in zip(words, probs) if word not in ignore_list}
-    sorted_word_probs = dict(sorted(word_probs.items(), key=lambda item: item[1], reverse=True))
-    top_words = dict(list(sorted_word_probs.items())[:count])
-    return top_words
-
 from random import choices
+
 def generate_text_from_unigrams(count, words, probs):
-    """
-    Generates text by randomly selecting words based on their unigram probabilities.
-    :param count: The number of words to generate.
-    :param words: A list of words to choose from.
-    :param probs: A list of probabilities corresponding to each word.
-    :return: A string of generated text.
-    """
     text = ''
     for _ in range(count):
         word = choices(words, weights=probs)[0]
@@ -153,14 +99,6 @@ def generate_text_from_unigrams(count, words, probs):
     return text.lstrip()
 
 def generate_text_from_bigrams(count, start_words, start_word_probs, bigram_probs):
-    """
-    Generates text by selecting words based on bigram probabilities, starting with a randomly chosen start word.
-    :param count: The number of words to generate.
-    :param start_words: A list of potential starting words.
-    :param start_word_probs: The probabilities for each start word.
-    :param bigram_probs: The bigram probabilities.
-    :return: A string of generated text.
-    """
     text = ''
     last_word = '.'
     for _ in range(count):
@@ -174,62 +112,58 @@ def generate_text_from_bigrams(count, start_words, start_word_probs, bigram_prob
         last_word = word
     return text.lstrip()
 
+def generate_text_from_trigrams(count, start_words, bigram_probs, trigram_counts):
+    """
+    Generates text by selecting words based on trigram probabilities.
+    :param count: The number of words to generate.
+    :param start_words: A list of potential starting words.
+    :param bigram_probs: The bigram probabilities.
+    :param trigram_counts: The trigram counts.
+    :return: A string of generated text.
+    """
+    if count < 3:
+        return " ".join(choices(start_words, k=count))
+    text = choices(start_words, k=2)  # Starting with two random words
+    for _ in range(count - 2):
+        last_two_words = tuple(text[-2:])
+        if last_two_words in trigram_counts:
+            next_words = list(trigram_counts[last_two_words].keys())
+            next_probs = [trigram_counts[last_two_words][word] for word in next_words]
+            next_word = choices(next_words, weights=next_probs, k=1)[0]
+        else:
+            # Fallback to bigram or even unigram probabilities if no trigram is found
+            next_words = bigram_probs.get(last_two_words[1], {'words': start_words})['words']
+            next_probs = bigram_probs.get(last_two_words[1], {'probs': [1/len(start_words)] * len(start_words)})['probs']
+            next_word = choices(next_words, weights=next_probs, k=1)[0]
+        text.append(next_word)
+    return ' '.join(text)
+
 def main():
-    """
-    Orchestrates the text generation process using both unigrams and bigrams.
-    Loads a text file to form a corpus, builds a vocabulary, counts unigrams and bigrams,
-    calculates probabilities, and generates text using both unigram and bigram models.
-    """
-    # Define the filename of the book or text file you wish to process
-    filename = 'path_to_your_text_file.txt'  # Replace with your text file's path
+    filename = './commedia.txt'
+    num_words = 1000
 
-    # Load the book and preprocess the corpus
     corpus = load_book(filename)
-
-    # Calculate the length of the corpus
     corpus_length = get_corpus_length(corpus)
-
-    # Build a vocabulary from the corpus
     vocabulary = build_vocabulary(corpus)
-
-    # Count unigrams in the corpus
     unigram_counts = count_unigrams(corpus)
-
-    # Identify starting words for sentences in the corpus
     start_corpus = make_start_corpus(corpus)
-
-    # Count bigrams in the corpus
     bigram_counts = count_bigrams(corpus)
-
-    # Calculate unigram probabilities
+    trigram_counts = count_trigrams(corpus)
     unigram_probs = build_unigram_probs(vocabulary, unigram_counts, corpus_length)
-
-    # Calculate bigram probabilities
     bigram_probs = build_bigram_probs(unigram_counts, bigram_counts)
-
-    # Build uniform probabilities for the starting words
     start_word_probs = build_uniform_probs(start_corpus)
 
-    # Define parameters for text generation
-    num_words = 100  # Number of words to generate
-    ignore_list = ['.', ',']  # Punctuation or words to ignore in certain operations
-    top_count = 10  # Number of top words/probabilities to display
-
-    # Generate and display text using the unigram model
     print("Generating text from unigrams...")
     text_from_unigrams = generate_text_from_unigrams(num_words, vocabulary, unigram_probs)
     print(text_from_unigrams)
 
-    # Generate and display text using the bigram model
     print("\nGenerating text from bigrams...")
     text_from_bigrams = generate_text_from_bigrams(num_words, start_corpus, start_word_probs, bigram_probs)
     print(text_from_bigrams)
 
-    # Display the top words based on unigram probabilities, excluding the ignore list
-    print("\nTop words based on unigram probabilities (excluding ignore list):")
-    top_words = get_top_words(top_count, vocabulary, unigram_probs, ignore_list)
-    for word, prob in top_words.items():
-        print(f"{word}: {prob}")
+    print("\nGenerating text from trigrams...")
+    text_from_trigrams = generate_text_from_trigrams(num_words, start_corpus, bigram_probs, trigram_counts)
+    print(text_from_trigrams)
 
 if __name__ == "__main__":
     main()
